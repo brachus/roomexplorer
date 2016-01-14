@@ -2,7 +2,7 @@ Overview
 ===
 
 RoomExplorer is a quick-n-dirty/from-scratch engine for writing highly
-scriptable 2-d dungeon crawlers.
+scriptable 2-d dungeon crawlers.  It's written in Javascript/CSS3/HTML5.
 
 ### Objects
 
@@ -35,13 +35,25 @@ Each object has an object script with three sections:
 * body
 * term
 
-Scripts are made up solely of built-in-method calls and labels.
+Scripts are ultimatley made up of built-in-method calls and labels.
 
-Control structures, branches, and evaluators may be implemented in the future, 
-but they're not right now.
+There is right now *really* minimal support for conditional
+branches:
 
-All that's available are built-in methods for comparing variables and jumping 
-on a conditional state.
+`
+if r0 {
+	do_something();
+} else if r1 {
+	do_something_elseif();
+} else {
+	do_something_else();
+}
+`
+
+Conditional block syntax is parsed into jump calls and labels.  Branch
+recursion is supported.  Only register identifiers ('r#') are supported.
+
+Evaluators may be implemented in the future, but they're not right now.
 
 
 Scripts are run all the way through in one engine loop to the last line of the 
