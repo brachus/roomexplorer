@@ -8,7 +8,7 @@ Attributions:
 ## base64.js:
 > BSD
 
-## dat/snd/: (modified)
+## dat/snd/: (all sounds are heavily modified)
 
 ### https://freesound.org/people/kangaroovindaloo/sounds/205966/:
 > Creative Commons Attribution 
@@ -17,10 +17,10 @@ Attributions:
 > Sampling+ License
 
 ### https://freesound.org/people/mario1298/sounds/181249/:
-> Creative Commons 0 (no copyright)
+> Creative Commons 0
 
 ### https://freesound.org/people/Tomlija/sounds/201207/:
-> Creative Commons Attribution	(let user know about usage.)
+> Creative Commons Attribution
 
 ### http://www.freesound.org/people/Tomlija/sounds/98152/:
-> Creative Commons Attribution	(let user know about usage.)
+> Creative Commons Attribution
