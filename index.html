@@ -5190,7 +5190,7 @@ game main
 	
 	.cur_room = '';
 	
-	.game_skip_psswd = 0;
+	.game_skip_psswd = 1;
 	
 	.audio_compressor_gain = 1.0;
 	
@@ -5206,9 +5206,8 @@ game main
 		
 		r0 = cmp_equal(main.game_skip_psswd,1);
 		if r0
-		{
 			main_start_game.init();
-		}
+			
 		else
         {
 			main_msg.type = set('message');
@@ -5324,9 +5323,7 @@ gen main_esc_listen
 		
 		r0 = key('escape');
 		if r0
-		{
 			portal_term.init();
-		}
 		
 		next_frame();
 	}

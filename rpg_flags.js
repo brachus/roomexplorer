@@ -7,7 +7,7 @@ var flag_main_script = 'main';
 
 var flag_width = 320;
 var flag_height = 240;
-var flag_scaler = 1.7;
+var flag_scaler = 1.5;
 
 //flag_width = 480;
 //flag_height = 320;

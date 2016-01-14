@@ -1,14 +1,5 @@
 
 
-if r0
-{
-	if r1
-	{
-		
-	}
-}
-
-
 >>> consider implementing reverb (via impulse response sample loading ),
 		as well as spatialized audio (based on actor positions
 		rel to camera pos).

@@ -366,10 +366,12 @@ var parse_base_parse = function(in_tokens)
 					vm_err.log('only single or double names are '+
 							'recognized within script block');
 			}
+			
 			else if (tmp_token[0] == 'sym' && tmp_token[1] == '}')
 			{
 				if (iflevel == -1)
 					parse_mode = 'open_predef';
+					
 				else if (ifstate[iflevel].mode == 'inbranch' || 
 							ifstate[iflevel].mode == 'inelsebranch')
 				{
@@ -396,6 +398,21 @@ var parse_base_parse = function(in_tokens)
 						);
 							
 					ifstate[iflevel].mode = 'open';
+					
+					if (ifstate[iflevel].mode == 'inelsebranch')
+					{
+						/* close conditional block, if end of else branch. */
+						parse_cur_func++;  
+						script_data[parse_tmp_obj][parse_script_type].push(
+								[
+									LABEL,				
+									'if'+ifstate[iflevel].id+'_end'	
+								]
+							);
+								
+						iflevel --;
+						ifstate.pop();
+					}
 					
 					parse_mode = 'script_open';
 				}
@@ -448,14 +465,17 @@ var parse_base_parse = function(in_tokens)
 					
 				}
 				
-			}
-				
+			}	
 				
 			else
 				vm_err.log(
 					'expected script content OR ending brace.  got '+
 					tmp_token[0]+' "'+tmp_token[1]+'" instead.');
 			
+			/* if we're parsing a conditional block, we're ouside of
+			 * a branch, and we come across anything other than the
+			 * start of a new conditional block:
+			 */
 			if (iflevel >= 0)
 			{
 				/* check to see if conditional block was broken.*/
@@ -463,21 +483,18 @@ var parse_base_parse = function(in_tokens)
 				{
 					/* close conditional block
 					 */
-					parse_cur_func++;  /* insert only a label */
+					parse_cur_func++;
 					script_data[parse_tmp_obj][parse_script_type].push(
 							[
-								LABEL,				// func (LABEL)
-								'if'+ifstate[iflevel].id+'_end'	// label name
+								LABEL,				
+								'if'+ifstate[iflevel].id+'_end'
 							]
 							);
 							
 					iflevel --;
 					ifstate.pop();
-					
 				}
-				
 			}
-			
 			
 			
 			break;
@@ -551,8 +568,11 @@ var parse_base_parse = function(in_tokens)
 				parse_mode = 'script_open';
 			}
 			else
-				vm_err.log('temporarily, single line conditional branches\n'+
-							'are currently unsupported.');	
+			{
+				holdloop = true;
+				ifstate[iflevel].mode = 'inelsebranch_oneline';
+				parse_mode = 'script_open';
+			}
 			break;
 			
 		case 'script_get_if_branch_open':
@@ -560,8 +580,6 @@ var parse_base_parse = function(in_tokens)
 				parse_mode = 'script_open';
 			else
 			{
-				vm_err.log('temporarily, single line conditional branches\n'+
-							'are currently unsupported.');	
 				holdloop = true;
 				ifstate[iflevel].mode = 'inbranch_oneline';
 				parse_mode = 'script_open';
@@ -797,7 +815,6 @@ var parse_base_parse = function(in_tokens)
 					
 					parse_literal_bucket = [];
 					
-					/* FIXME could semicolon expectation be eliminated here ? */
 					if (tmp_token[1] == ')')
 						parse_mode = 'script_get_semicolon';  
 				}
@@ -819,7 +836,52 @@ var parse_base_parse = function(in_tokens)
 		
 		case 'script_get_semicolon':
 			if (tmp_token[0] == 'sym' && tmp_token[1] == ';')
+			{
+				if (	iflevel >= 0 &&
+						ifstate[iflevel].mode == 'inbranch_oneline')
+				{
+					/* close branch, set mode to open */
+					/* jump out of branch to end of conditional block. */
+					parse_cur_func++;
+					script_data[parse_tmp_obj][parse_script_type].push(
+						[
+							_JMP,				
+							NO_OPP,				
+							[NO_RET, -1],					
+							[ [USE_VAL,'if'+ifstate[iflevel].id+'_end']
+								]								
+						]
+						);
+						
+					/* mark end of branch. */
+					parse_cur_func++;
+					script_data[parse_tmp_obj][parse_script_type].push(
+						[
+							LABEL,				
+							'if'+ifstate[iflevel].id+'_'+
+								ifstate[iflevel].branchcntr+'_end'	
+						]
+						);
+						
+					ifstate[iflevel].mode = 'open';
+				}
+				else if (iflevel >= 0 &&
+						ifstate[iflevel].mode == 'inelsebranch_oneline')
+				{
+					/* close conditional block */
+					parse_cur_func++;
+					script_data[parse_tmp_obj][parse_script_type].push(
+							[
+								LABEL,				
+								'if'+ifstate[iflevel].id+'_end'
+							]
+							);
+							
+					iflevel --;
+					ifstate.pop();
+				}
 				parse_mode = 'script_open';
+			}
 				
 				
 			else
