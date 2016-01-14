@@ -1,0 +1,93 @@
+tilemap room4_tmap
+{
+	.pos = [0,0];
+	.gfx = 
+	{
+		img
+		 'dat/room4_tmap/000.png'
+		 'dat/room4_tmap/001.png'
+		 'dat/room4_tmap/002.png'
+		 'dat/room4_tmap/003.png'
+		 'dat/room4_tmap/004.png'
+		 'dat/room4_tmap/005.png'
+		 'dat/room4_tmap/006.png'
+		 'dat/room4_tmap/007.png'
+		 'dat/room4_tmap/008.png'
+		 'dat/room4_tmap/009.png'
+		 'dat/room4_tmap/010.png'
+		 'dat/room4_tmap/011.png'
+		 'dat/room4_tmap/012.png'
+		 'dat/room4_tmap/013.png'
+		 'dat/room4_tmap/014.png'
+		 'dat/room4_tmap/015.png'
+		 'dat/room4_tmap/016.png'
+		 'dat/room4_tmap/017.png'
+		 'dat/room4_tmap/018.png'
+		 'dat/room4_tmap/019.png'
+		 'dat/room4_tmap/020.png'
+	};
+	.blockers = 
+	[
+		['none'],  /* 0 */
+		['none'],  /* 1 */
+		['none'],  /* 2 */
+		['none'],  /* 3 */
+		['none'],  /* 4 */
+		['none'],  /* 5 */
+		['none'],  /* 6 */
+		['none'],  /* 7 */
+		['none'],  /* 8 */
+		['none'],  /* 9 */
+		['none'],  /* 10 */
+		['none'],  /* 11 */
+		['none'],  /* 12 */
+		['none'],  /* 13 */
+		['none'],  /* 14 */
+		['none'],  /* 15 */
+		['none'],  /* 16 */
+		['none'],  /* 17 */
+		['none'],  /* 18 */
+		['none'],  /* 19 */
+		['none']   /* 20 */
+	];
+	.block_bool = 
+	[
+		'and',  /* 0 */
+		'and',  /* 1 */
+		'and',  /* 2 */
+		'and',  /* 3 */
+		'and',  /* 4 */
+		'and',  /* 5 */
+		'and',  /* 6 */
+		'and',  /* 7 */
+		'and',  /* 8 */
+		'and',  /* 9 */
+		'and',  /* 10 */
+		'and',  /* 11 */
+		'and',  /* 12 */
+		'and',  /* 13 */
+		'and',  /* 14 */
+		'and',  /* 15 */
+		'and',  /* 16 */
+		'and',  /* 17 */
+		'and',  /* 18 */
+		'and',  /* 19 */
+		'and'   /* 20 */
+	];
+	.array = 
+[[0,0,0,0,0,0,0,0],
+[0,1,2,3,4,5,6,0],
+[0,7,8,9,10,8,11,0],
+[0,8,8,12,13,8,8,0],
+[0,14,14,15,16,14,14,0],
+[0,14,14,14,14,14,14,0],
+[0,14,14,14,14,14,14,0],
+[0,14,14,14,14,14,14,0],
+[0,14,14,17,18,14,14,0],
+[0,14,14,19,20,14,14,0],
+[0,14,14,14,14,14,14,0],
+[0,14,14,14,14,14,14,0],
+[0,14,14,14,14,14,14,0],
+[0,0,0,0,0,0,0,0]
+];
+}
