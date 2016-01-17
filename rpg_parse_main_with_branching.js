@@ -649,7 +649,7 @@ var parse_base_parse = function(in_tokens)
 						-1,					/* func (str for now) */
 						NO_OPP,				/* opperand (str for now) */
 						[ parse_tmp_name[1],
-						  parse_tmp_name[2]], /* return (null) */
+						  parse_tmp_name[2]], /* return  */
 						[]					/* no args. */
 					]
 					);
@@ -970,9 +970,10 @@ var parse_base_parse = function(in_tokens)
 								'() . ');
 					}
 					
-					/* replace any opperand string in return with index. */
+					/* replace any string in return with index. */
 					if ( (typeof tmp_func[F_RET][0]) == 'string')
 					{
+						
 						if (parse_done_obj_names.indexOf(
 								tmp_func[F_RET][0]) != -1)
 							tmp_func[F_RET][0] =

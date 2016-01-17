@@ -141,8 +141,11 @@ var vm_proc_step = function ( sub_idx )
             var do_ret_idx = false;
             var idx_list = false;
             
-            if (proc_call[F_RET][0] > 0)
+            
+            
+            if (proc_call[F_RET][0] >= 0)
             {
+		
                 if (vm_script_data[proc_call[F_RET][0]].type == 'game')
                 {
                     if (proc_call[F_RET][1] == 'clip_tmap')
@@ -151,7 +154,11 @@ var vm_proc_step = function ( sub_idx )
                 }
                 else if (vm_script_data[proc_call[F_RET][0]].type == 'actor')
                 {
+					
                     if (proc_call[F_RET][1] == 'sprt')
+                        if (typeof proc_args[0] == 'string')
+                            do_ret_idx = true;
+                    else if (proc_call[F_RET][1] == 'snd')
                         if (typeof proc_args[0] == 'string')
                             do_ret_idx = true;
                 }
@@ -166,11 +173,11 @@ var vm_proc_step = function ( sub_idx )
                     proc_ret = get_obj_idx(proc_args[0]);
                     if (proc_ret == -1)
                         vm_err.log
-                        (
-                            'object "'+
-                                proc_args[0]+
-                                '" does\'t exist.'
-                        );
+							(
+								'object "'+
+									proc_args[0]+
+									'" does\'t exist.'
+							);
                 }
             }
                 
