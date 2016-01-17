@@ -1929,11 +1929,9 @@ actor ch0
 			.msg_send('upclose','interact');
 		
 		/* handle key movement and clipping */
-		else
-		{
-			.key_move(1);
-			.clip();
-		}
+		
+		.key_move(1);
+		.clip();
 		
 		next_frame();
 	}
