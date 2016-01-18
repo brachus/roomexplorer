@@ -727,8 +727,10 @@ var vm_proc_step = function ( sub_idx )
 			{
 				if (    msg_srcs[l] == find_id &&
                         msg_strs[l] == find_mesg   )
+                {
 					proc_ret = 1; /* found match */
 					break;
+				}
 			}
             
             break;
