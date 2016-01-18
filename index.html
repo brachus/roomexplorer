@@ -5,7 +5,7 @@
     
     body
     {
-        background-color: #1a1a1a;
+        background-color: rgb(15,15,16);
     }
     
     .content
@@ -27,7 +27,7 @@
 	{
 		margin-top: 10px;
 		
-		background-color: #151515;
+		background-color: rgb(10,10,10);
 		
 		font-family: Monaco, Inconsolata, monospace;
 		text-align: left;
@@ -1955,6 +1955,27 @@ actor present_0
 	
 	body
 	{
+		r1 = cmp_equal(.present_state, 'closed');
+		if r1
+		{
+			r0 = .msg_check('player','interact');
+			if r0
+			{
+				main_msg.type = set('message');
+				main_msg.text = set('#b You picked up test item.#w');
+				main_msg.open();
+				
+				.sprt = set(-1);
+				.solid =  set(0);
+				
+				.present_state = set('opened');
+				
+				main_inventory.additem('i_testitem');
+				
+				.msg_clear();
+			}
+		}
+		
 		next_frame();
 	}
 	
@@ -1970,7 +1991,7 @@ window main_msg
 	
 	.bg_color = [10,10,30];
     
-    .font = '10px monaco, inconsolatia, monospace';
+    .font = '11px monaco, inconsolatia, monospace';
 	
     .text = '';
     
@@ -1978,7 +1999,7 @@ window main_msg
     
     .nlines = 4;
     .height = 55;
-    .width = 160;
+    .width = 180;
     
 }
 
@@ -1988,7 +2009,7 @@ window main_msg1
 	
 	.bg_color = [10,10,30];
     
-    .font = '10px monaco, inconsolatia, monospace';
+    .font = '11px monaco, inconsolatia, monospace';
 	
     .text = '';
     
@@ -1996,7 +2017,7 @@ window main_msg1
     
     .nlines = 4;
     .height = 55;
-    .width = 160;
+    .width = 180;
 }
 
 window main_input
@@ -2159,7 +2180,7 @@ gen main_bg_run
 			main_msg.grab_keys = set(1);
 			
 			main_msg.text = set('
-- test menu -#n
+- menu -#n
   #e:testmsg:openmsg1#  #e:bag:main_open_inventory# #n
   #e:close  :killmenu#  #e:kill vm:main_killvm#');
 			main_msg.open();
@@ -2229,7 +2250,7 @@ gen killmsg0
 	body
 	{
 		main_msg.close();
-		main_msg1.close(); /* don't forget */
+		main_msg1.close();
 	}
 }
 
@@ -2650,18 +2671,11 @@ inventory main_inventory
  */
 item i_lighter
 {
-	.checkable = 1;
-	.useable = 1;
-	
-	.usesleft = -1;
-	
-	.getridofme = 0;
 	
 	.name = 'lighter';
 	.desc = 'A pocket lighter with plenty of fuel.';
 	
 	.use_script = 'use_lighter';
-	.chk_script = 'chk_lighter';
 	
 	/* when item is used, do this: */
 	body
@@ -2670,7 +2684,6 @@ item i_lighter
 		println('used lighter!');
 	}
 }
-
 
 gen use_lighter  
 {
@@ -2686,6 +2699,33 @@ gen use_lighter
 		/*do lighter click sound */
 		
 		i_lighter.init();
+	}
+}
+
+
+item i_testitem
+{
+	
+	.name = 'testitem';
+	.desc = 'A test item.';
+	
+	.use_script = 'use_testitem';
+	
+	/* when item is used, do this: */
+	body
+	{
+		main_msg.close();
+		main_msg1.close();
+		main_msg1.type = set('message');
+		main_msg1.text = set('#b [Using test item ...]#w');
+		main_msg1.open();
+	}
+}
+gen use_testitem
+{
+	body
+	{
+		i_testitem.init();
 	}
 }
 
