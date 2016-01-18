@@ -45,4 +45,4 @@ flag_win_msg_wait_sym = '';
 
 var flag_win_menu_wrap = false;
 
-var flag_lowpass = false;
+var flag_lowpass = true;

@@ -1170,7 +1170,7 @@ var parse_base_parse = function(in_tokens)
 		
 		
 		
-		/*	FIXME, kludge:
+		/*	FIXME, very bad kludge:
 		 *		this replaces string values for certain variables with obj idx's.
 		 */
 		if (script_data[i].type == 'game')
@@ -1182,6 +1182,20 @@ var parse_base_parse = function(in_tokens)
 				
 				if ( match != -1)
 					script_data[i].vars['clip_tmap'] = match;
+				else
+					vm_err.log('obj "'+tobj_str+'" doesn\'t exist.' );
+			}
+			
+		}
+		else if (script_data[i].type == 'window')
+		{
+			if (typeof script_data[i].vars['inventory'] == 'string')
+			{
+				var tobj_str = script_data[i].vars['inventory'];
+				var match = parse_done_obj_names.indexOf( tobj_str );
+				
+				if ( match != -1)
+					script_data[i].vars['inventory'] = match;
 				else
 					vm_err.log('obj "'+tobj_str+'" doesn\'t exist.' );
 			}

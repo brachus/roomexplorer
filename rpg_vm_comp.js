@@ -524,11 +524,14 @@ var vm_render =
                 
 			}
             
-            /* draw fader */
+            /* render windows */
+            vm_win.render(main_ctx);
+            
+            /* draw fader (~FADER COVERS ALL~)*/
             var fad_col = main_v.vars['fad_color'];
             var fad_opc = main_v.vars['fad_opacity'] / 255.0;
 			
-			/** KLUDGE **/
+			/* kludge */
 			if (fad_opc > .9) fad_opc = 1.0; 
                         
             main_ctx.globalAlpha = fad_opc;
@@ -538,26 +541,23 @@ var vm_render =
             
 			main_ctx.fillRect(0,0,this.width,this.height);
 			
-            
 			/* global alpha ALWAYS should be reset. */
             main_ctx.globalAlpha = 1.0; 
             main_ctx.globalCompositeOperation = 'source-over';
             
-            /* render windows */
-            vm_win.render(main_ctx);
+            
 			
 			/* render scaled main_surface to canvas. */
 			var ctx2 = this.canvas.getContext('2d');
             
-            /* scale what is to be drawn to canvas (main_display) */
+            /* scale what is to be drawn to canvas (main_surface) */
 			ctx2.scale(flag_scaler, flag_scaler); 
 			ctx2.drawImage(this.main_surface,0,0);
             
             /* reset scale for main_surface */
 			ctx2.scale(1.0, 1.0);
 			/*
-			 * experimental, and thus not used:
-			 *		ctx2.resetTransform();
+			 * experimental, thus not used: ctx2.resetTransform();
 			 */
             ctx2.setTransform(1, 0, 0, 1, 0, 0);		
 			
@@ -931,11 +931,8 @@ var vm_audio =
 			/* create nodes and hook them all up: */
 			this.node_passthrough = this.ctx.createGain();
 			
-			if (flag_lowpass)
-				/*lowpass: */
-				this.node_postrev_passthrough = this.ctx.createBiquadFilter();
-			else
-				this.node_postrev_passthrough = this.ctx.createGain();
+			
+			this.node_postrev_passthrough = this.ctx.createGain();
 			
 			this.node_reverb = this.ctx.createConvolver();
 			this.node_compressor = this.ctx.createDynamicsCompressor();
@@ -943,6 +940,10 @@ var vm_audio =
 			this.node_rev_wet = this.ctx.createGain();
 			this.node_comp_dry = this.ctx.createGain();
 			this.node_comp_wet = this.ctx.createGain();
+			this.node_lowpass = this.ctx.createBiquadFilter();
+			this.node_lowpass_dry = this.ctx.createGain();
+			this.node_lowpass_wet = this.ctx.createGain();
+			this.node_postlow_passthrough = this.ctx.createGain();
 			this.node_master_gain = this.ctx.createGain();
 			
 			this.node_passthrough.connect(this.node_reverb);
@@ -953,8 +954,15 @@ var vm_audio =
 			this.node_rev_dry.connect(this.node_postrev_passthrough);
 			this.node_rev_wet.connect(this.node_postrev_passthrough);
 			
-			this.node_postrev_passthrough.connect(this.node_compressor);
-			this.node_postrev_passthrough.connect(this.node_comp_dry);
+			this.node_postrev_passthrough.connect(this.node_lowpass);
+			this.node_postrev_passthrough.connect(this.node_lowpass_dry);
+			this.node_lowpass.connect(this.node_lowpass_wet);
+			
+			this.node_lowpass_wet.connect(this.node_postlow_passthrough);
+			this.node_lowpass_dry.connect(this.node_postlow_passthrough);
+			
+			this.node_postlow_passthrough.connect(this.node_compressor);
+			this.node_postlow_passthrough.connect(this.node_comp_dry);
 			
 			this.node_compressor.connect(this.node_comp_wet);
 			
@@ -963,12 +971,14 @@ var vm_audio =
 			
 			this.node_master_gain.connect(this.ctx.destination);
 			
-			/* preset reverb/compressor wet gains: */
+			/* preset reverb/compressor/lowpass gains: */
 			this.node_comp_wet.gain.value = 0.0;
 			this.node_rev_wet.gain.value = 0.0;
+			this.node_lowpass_wet.gain.value = 0.5;
 			
-			this.node_comp_wet.gain.value = 1.0;
-			this.node_rev_wet.gain.value = 1.0;
+			this.node_comp_dry.gain.value = 1.0;
+			this.node_rev_dry.gain.value = 1.0;
+			this.node_lowpass_dry.gain.value = 0.5;
 			
 			
 			/* start loading all sound in vm_media_lib
@@ -979,15 +989,11 @@ var vm_audio =
 			this.snd_load_next();
 			
 			for (var i = 0; i < vm_media_lib.length; i++ )
-			{
 				if (vm_media_lib[i][0] == SND_NLOADED)
 				{
-					
-					vm_media_lib[i][2] = undefined
-					
+					vm_media_lib[i][2] = undefined;
 					this.snd_total ++;
 				}
-			}
 			
 		},
 	
@@ -1006,6 +1012,9 @@ var vm_audio =
 				
 				var rev_gain =
 					vm_script_data[vm_main_idx].vars['audio_reverb_gain'];
+				
+				var lowpass_gain =
+					vm_script_data[vm_main_idx].vars['audio_lowpass_gain'];
 					
 				var dyncomp_gain =
 					vm_script_data[vm_main_idx].vars['audio_compressor_gain'];
@@ -1014,6 +1023,13 @@ var vm_audio =
 				if (master_gain >= 0.0 && master_gain <= 1.0)
 					this.node_master_gain.gain.value = master_gain;
 					
+				if (lowpass_gain >= 0.0 && lowpass_gain <= 1.0)
+				{
+					tmpdry = 1.0 - lowpass_gain;
+					this.node_lowpass_dry.gain.value = tmpdry;
+					this.node_lowpass_wet.gain.value = lowpass_gain;
+				}
+				
 				if (rev_gain >= 0.0 && rev_gain <= 1.0)
 				{
 					tmpdry = 1.0 - rev_gain;

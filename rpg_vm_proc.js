@@ -329,7 +329,7 @@ var vm_proc_step = function ( sub_idx )
                             /* if all looks good, verify type, wrap it up,
                              * and add it to vm_fader.
                              */
-                            vm_fader.add(
+                            vm_fader.add (
                                 f_type,
                                 f_objidx,
                                 f_varname,
@@ -338,7 +338,6 @@ var vm_proc_step = function ( sub_idx )
                                 f_frames);
                             
                     }
-                    
                 }
             }
             
@@ -410,6 +409,48 @@ var vm_proc_step = function ( sub_idx )
             break;
         }
         break;
+    case 'inventory':
+		var inv_v = vm_script_data[proc_call[F_OPP]].vars;
+		
+		switch (proc_call[F_FUNC])
+		{
+		case _ADDITEM:
+			var item_nm = proc_args[0];
+			
+			var item_idx = get_obj_idx(item_nm);
+			
+			if (item_idx != -1)
+				if (inv_v['dat'].indexOf(item_idx) == -1)
+					inv_v['dat'].push(item_idx);
+			break;
+			
+		case _DROPITEM:
+			var item_nm = proc_args[0];
+			
+			var item_idx = get_obj_idx(item_nm);
+			
+			if (item_idx != -1)
+			{
+				tmpidx = inv_v['dat'].indexOf(item_idx)
+				if (tmpidx != -1)
+					inv_v['dat'].splice(tmpidx, 1);
+			}
+				
+			break;
+			
+		default:
+			vm_err.log
+            (
+                'method "'+
+                    proc_call[F_FUNC]+
+                    '()" doesn\'t exist for obj type "'+
+                    opp_type+
+                    '".'
+            );
+            break;
+		}
+		break;
+		
     case 'actor':
         var actr_v = vm_script_data[proc_call[F_OPP]].vars;
         
@@ -438,13 +479,9 @@ var vm_proc_step = function ( sub_idx )
             if (main_v['mod_4'] == 3)
                 tmpdincr = Math.floor(use_speed / 2);
             
-            
-            
             actr_dpos = actr_v['dpos'];
             actr_if_mov = actr_v['if_mov'];
             actr_dir = actr_v['dir'];
-            
-            
             
             actr_if_mov = 1;
             
@@ -485,7 +522,6 @@ var vm_proc_step = function ( sub_idx )
             actr_v['dpos'] = actr_dpos;
             actr_v['if_mov'] = actr_if_mov;
             actr_v['dir'] = actr_dir;
-            
             
             break;
             
@@ -564,8 +600,6 @@ var vm_proc_step = function ( sub_idx )
                         clip_get_dat(actr_tile_pnt[k])
                     );
                     
-                    
-                    
                     var noclip = 
                     clip_block_test  /* check to see if actor bbox+tmp_dpos
                                       * gets clipped against clip tmap.
@@ -591,11 +625,8 @@ var vm_proc_step = function ( sub_idx )
                         /* for now simply clip dpos whenever
                          * collision occurs. */
                     {
-                        actr_v['dpos'][0] =
-                                                            old_dpos[0];
-                        actr_v['dpos'][1] =
-                                                            old_dpos[1];
-                        
+                        actr_v['dpos'][0] = old_dpos[0];
+                        actr_v['dpos'][1] = old_dpos[1];
                         
                         clip_cont = false;
                         break;
@@ -714,10 +745,7 @@ var vm_proc_step = function ( sub_idx )
 				
 				if (tmpsnddat != undefined && tmpsnddat.length > 0)
 					vm_audio.play(tmpsnddat[0], snd_idx, actr_idx);
-				
 			}
-			
-			
 			break;
 			
 		case _STOPSND:
@@ -728,14 +756,13 @@ var vm_proc_step = function ( sub_idx )
 				vm_audio.stop(tmp_snd_item);
 			break;
             
-            
         default:
             vm_err.log
-            ( 'method "'+
-                    proc_call[F_FUNC]+
-                    '()" doesn\'t exist for obj type "'+
-                    opp_type+
-                    '".' );
+				( 'method "'+
+					proc_call[F_FUNC]+
+					'()" doesn\'t exist for obj type "'+
+					opp_type+
+					'".' );
             break;
         }
         break;
@@ -772,13 +799,13 @@ var vm_proc_step = function ( sub_idx )
 			
         default:
             vm_err.log
-            (
-                'method "'+
-                    proc_call[F_FUNC]+
-                    '()" doesn\'t exist for obj type "'+
-                    opp_type+
-                    '".'
-            );
+				(
+					'method "'+
+						proc_call[F_FUNC]+
+						'()" doesn\'t exist for obj type "'+
+						opp_type+
+						'".'
+				);
             break;
         }
         break;
@@ -895,7 +922,6 @@ var vm_proc_step = function ( sub_idx )
 					
 				}
             }
-            
             else if  (vm_script_data[ de_opp ].type == 'tilemap' )
             {
                 tmp_idx = main_v['active_tmaps'].indexOf( de_opp );

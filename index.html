@@ -1927,13 +1927,10 @@ actor ch0
 		 * space key is pressed down.
 		 */
 		r0 = key_down('space');
-		
-        /* let player "interact" with spacebar. */
 		if r0
 			.msg_send('upclose','interact');
 		
 		/* handle key movement and clipping */
-		
 		.key_move(1);
 		.clip();
 		
@@ -1967,18 +1964,69 @@ actor present_0
 
 
 </object>
+		<object id='all_win' hidden>
+
+window main_msg
+{
+	.pos = [20,20];
+	
+	.bg_color = [10,10,30];
+    
+    .font = '10px monaco, inconsolatia, monospace';
+	
+    .text = '';
+    
+    
+    
+    .nlines = 4;
+    .height = 55;
+    .width = 160;
+    
+}
+
+window main_msg1
+{
+	.pos = [40, 40];
+	
+	.bg_color = [10,10,30];
+    
+    .font = '10px monaco, inconsolatia, monospace';
+	
+    .text = '';
+    
+    .inventory = 'main_inventory';
+    
+    .nlines = 4;
+    .height = 55;
+    .width = 160;
+}
+
+window main_input
+{
+	.pos = [40,50];
+	
+	.bg_color = [10,10,30];
+    
+    .font = '10px monaco, inconsolatia, monospace';
+	
+    .text = '';
+    
+    .type = 'input';
+}
+</object>
 		<object id='main' hidden>
         
 /* this is to serve as a reference for
  * constructing rpg's from the engine.
  */
 
-
+#include all_win#
 #include all_actrs#
 #include all_sprites#
 #include all_tmaps#
 #include all_snd#
 #include all_exits#
+#include all_items#
 
 
 game main
@@ -1999,14 +2047,15 @@ game main
 	
 	.audio_compressor_gain = 1.0;
 	
+	.audio_lowpass_gain = 0.2;
+	
 	.audio_master_gain = 0.8;
     
 	body		/** entry point **/
 	{	
-	  	println('press esc to kill vm. ');
+	  	println('press "m" for menu. ');
         
 		main_esc_listen.init();
-		
 		
 		
 		r0 = cmp_equal(main.game_skip_psswd,1);
@@ -2017,7 +2066,7 @@ game main
         {
 			main_msg.type = set('message');
 			main_msg.text = set('#b (This game#n   is currently 
-password#n   protected.)#p:70# #s:main_get_psswd#');
+				password#n   protected.)#p:70# #s:main_get_psswd#');
 			main_msg.open();
 		}
 	}
@@ -2094,7 +2143,7 @@ gen main_bg_run
 {
 	body
 	{
-	  r0 = key_down('t');
+		r0 = key_down('t');
         if r0
         {
 			main_msg.type = set('menu');
@@ -2111,12 +2160,34 @@ gen main_bg_run
 			main_msg.type = set('menu');
 			main_msg.grab_keys = set(1);
 			
-			main_msg.text = set('- test menu -#n  #e:option1:openmsg1#  #e:
-option2:killmenu# #n  #e:option3:killmenu#  #e:option4:killmenu#');
+			main_msg.text = set('
+- test menu -#n
+  #e:testmsg:openmsg1#  #e:bag:main_open_inventory# #n
+  #e:close  :killmenu#  #e:kill vm:main_killvm#');
 			main_msg.open();
 		}
 		
+		
 		next_frame();
+	}
+}
+
+gen main_open_inventory
+{
+	body
+	{
+		main_msg1.close();
+		main_msg1.type = set('inventory');
+		main_msg1.grab_keys = set(1);
+		main_msg1.open();
+	}
+}
+
+gen main_killvm
+{
+	body
+	{
+		portal_term.init();
 	}
 }
 
@@ -2124,11 +2195,13 @@ gen main_esc_listen
 {
 	body
 	{
-		/* if escape key is pressed, start term portal. */
 		
 		r0 = key('escape');
 		if r0
-			portal_term.init();
+		{
+			main_msg.close();
+			main_msg1.close();
+		}
 		
 		next_frame();
 	}
@@ -2172,66 +2245,20 @@ gen print_input
 
 
 
-window main_msg
-{
-	.pos = [20,20];
-	
-	.bg_color = [10,10,30];
-    
-    .font = '10px monaco, inconsolatia, monospace';
-	
-    .text = '';
-    
-    .nlines = 4;
-    .height = 55;
-    .width = 160;
-    
-}
-
-window main_msg1
-{
-	.pos = [40, 40];
-	
-	.bg_color = [10,10,30];
-    
-    .font = '10px monaco, inconsolatia, monospace';
-	
-    .text = '';
-    
-    .nlines = 4;
-    .height = 55;
-    .width = 160;
-}
-
-window main_input
-{
-	.pos = [40,50];
-	
-	.bg_color = [10,10,30];
-    
-    .font = '10px monaco, inconsolatia, monospace';
-	
-    .text = '';
-    
-    .type = 'input';
-}
-
-
-
-
-
-#include allportals#
-
-#include allrooms#
+#include all_portals#
+#include all_rooms#
 
 		</object>
-		<object id='allportals' hidden>
+		<object id='all_portals' hidden>
 
 /* enter room 0 initially. */
 portal portal_0
 {
     body
     {
+		/*add initial set of items to inventory. */
+		main_inventory.additem(i_lighter);
+		
         keys_disable();         /* disable user input */
         
         sleep(main.fad_dur);    /* wait for fad out trans. */
@@ -2610,24 +2637,63 @@ portal portal_term
 }
 
 </object>
-		<object id='allitems' hidden>
+		<object id='all_items' hidden>
+
+inventory main_inventory
+{
+	.dat = [];
+	.name = 'item bag';
+}
+
+/* each item has only one available instance (as any other object)
+
+/* thus, if one wanted to plant healing items throughout the game,
+ *   a new set of objects for each item would have to be created.
+ */
 item i_lighter
 {
-	check = 1;
-	use = 1;
+	.checkable = 1;
+	.useable = 1;
 	
-	desc = 'A pocket lighter with plenty of fuel.';
+	.usesleft = -1;
+	
+	.getridofme = 0;
+	
+	.name = 'lighter';
+	.desc = 'A pocket lighter with plenty of fuel.';
+	
+	.use_script = 'use_lighter';
+	.chk_script = 'chk_lighter';
 	
 	/* when item is used, do this: */
 	body
 	{
 		ch0.msg_send('upclose','lighter');
-		
+		println('used lighter!');
 	}
 }
 
+
+gen use_lighter  
+{
+	body
+	{
+		/* this script is responsible for "using" the item,
+		 * as well as closing the inventory window
+		 */
+		main_msg.close();
+		main_msg1.close();
+		
+		
+		/*do lighter click sound */
+		
+		i_lighter.init();
+	}
+}
+
+
 </object>
-		<object id='allrooms' hidden>
+		<object id='all_rooms' hidden>
 
 /* labyrinth 0 under passage */
 room room_1

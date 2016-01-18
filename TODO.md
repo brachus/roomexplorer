@@ -1,3 +1,6 @@
+->implement inv.additem();
+->implement inv.dropitem();
+->implement win_closeall();
 
 
 >>> consider implementing reverb (via impulse response sample loading ),

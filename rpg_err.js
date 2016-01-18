@@ -29,7 +29,7 @@ var vm_err =
 	warn:
 		function(msg)
 		{
-			if (do_warn)
+			if (this.do_warn)
 				vm_console.log(
 						this.get_prefix()+
 						' warning: ' + msg

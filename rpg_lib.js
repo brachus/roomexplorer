@@ -72,6 +72,9 @@ _PLAYSND = 43; /* play/pause/stop audio */
 _STOPSND = 44;  
 _STOPALL = 45;
 
+/* add/drop items to/from inventory */
+_ADDITEM = 47;
+_DROPITEM = 48;
 
 
 /* enums for function components: */
@@ -404,6 +407,21 @@ vm_method_lib =
 				returns:	['int'],
 				args:		[]
 			},
+		],
+	'inventory':
+		[
+			{
+				fname:		'additem',
+				fenum:		_ADDITEM,
+				returns:	['int'],
+				args:		[['str']]
+			},
+			{
+				fname:		'dropitem',
+				fenum:		_DROPITEM,
+				returns:	['int'],
+				args:		[['str']]
+			}
 		]
 };
 
@@ -505,6 +523,8 @@ vm_obj_lib =
         /* dynamics compressor gain (0.0 - 1.0). like reverb, web/dry is han-
          * deled automatically.
          */
+		
+		 'audio_lowpass_gain'				: '0.0',
          
          'audio_master_gain'				: '1.0'
          
@@ -621,9 +641,44 @@ vm_obj_lib =
         'parsed'	:  '[]',
 		'mode'		: '"null"',
 		'text_raise': '0',
-		'cntr'		: '0'
-    }
+		'cntr'		: '0',
+		
+		'inventory'	: '0',
+		
+		'allowesc'	: '0' /*if 1, allow window to be closed with pressing escape.*/
+    },
+    
+    'inventory' :
+    {
+		'dat' :'[]',
+		'name':'""',
+		'maxcol':'2',
+		'maxitems':'6',
+		'maxnlength':'8'
+	},
+	
+	'item' :
+	{
+		'checkable' : '1',
+		'useable' : '1',
+		
+		'usesleft' : '-1',
+		/* uses left for item.  if -1, the item may be used indefinitley*/
+		
+		'getridofme' : '0',
+		/* if set to 1, any inventory object that has this item listed will
+		 * get rid of it in it's listing if it has it.
+		 */
+		 
+		 /* these are strictly strings representing obj names. not indexes.*/
+		'use_script' : '""',
+		'chk_script' : '""',
+		
+		'name' : '""',
+		'desc' : '""'
+	}
 		
 		
 }
+
 
